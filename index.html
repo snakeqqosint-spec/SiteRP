@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OutlaweEmpire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d001a, #1a0033, #05000a);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Шапка сайта */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(10, 0, 20, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-box img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffffff, #b19cd9, #9370db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Меню */
+        .menu-container {
+            position: relative;
+            z-index: 1002;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #4b0082, #8a2be2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+            transition: 0.3s;
+            pointer-events: auto;
+        }
+
+        .menu-btn:hover {
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.8);
+            transform: scale(1.05);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 55px;
+            background: #120024;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            width: 210px;
+            overflow: hidden;
+            z-index: 1003;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #ddd;
+            text-decoration: none;
+            transition: 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(138, 43, 226, 0.3);
+            color: #fff;
+            padding-left: 25px;
+        }
+
+        .admin-link {
+            color: #ff5555 !important;
+            font-weight: bold;
+            display: none;
+        }
+        /* Главный контент */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hero-logo {
+            max-width: 280px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ffffff, #d8bfd8, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .creator-tag {
+            color: #b19cd9;
+            font-size: 1.1rem;
+            background: rgba(138, 43, 226, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .tg-news-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #2AABEE, #229ED9);
+            color: white;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(42, 171, 238, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+            margin-top: 5px;
+        }
+
+        .tg-news-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(42, 171, 238, 0.7);
+        }
+
+        /* Окна вкладок */
+        .tab-content {
+            display: none;
+            background: rgba(18, 0, 36, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            text-align: left;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            margin-bottom: 20px;
+            color: #d8bfd8;
+            border-bottom: 2px solid rgba(138, 43, 226, 0.4);
+            padding-bottom: 10px;
+        }
+
+        .close-tab {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .close-tab:hover { color: #fff; }
+
+        .info-row {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+        
+        .form-group {
+            margin-top: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #b19cd9;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: rgba(5, 0, 10, 0.6);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .btn-action {
+            background: #8a2be2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .btn-action:hover {
+            background: #9370db;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+        }
+
+        .btn-admin {
+            background: #b22222;
+        }
+        .btn-admin:hover {
+            background: #dc143c;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #b19cd9;
+        }
+        .auth-switch span {
+            color: #fff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .captcha-box {
+            background: rgba(138, 43, 226, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed rgba(138, 43, 226, 0.4);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Подвал */
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #777;
+            background: rgba(5, 0, 10, 0.8);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <div class="logo-box">
+            <img src="logo.png" alt="Logo">
+            <div class="logo-text">OutlaweEmpire</div>
+        </div>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="toggleMenu(event)">Меню ▾</button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#" onclick="openTab('about')">О проекте</a>
+                <a href="#" onclick="openTab('donate')">Донат</a>
+                <a href="#" onclick="openTab('support')">Тех. Поддержка</a>
+                <a href="#" onclick="openTab('cabinet')" id="cabinetMenuTitle">Личный кабинет</a>
+                <a href="#" onclick="openTab('admin')" class="admin-link" id="adminMenuBtn">🛡 Админ-панель</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Центр страницы -->
+    <main>
+        <!-- Главный экран -->
+        <div class="hero" id="mainHero">
+            <img src="logo.png" alt="OutlaweEmpire Art" class="hero-logo">
+            <h1>OutlaweEmpire</h1>
+            <div class="creator-tag">Создатель: @XSviatX</div>
+            <a href="https://t.me/OutlaweEmpire" target="_blank" class="tg-news-btn">📢 Новости (Telegram)</a>
+        </div>
+
+        <!-- О проекте -->
+        <div class="tab-content" id="tab-about">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2>О проекте</h2>
+            <p style="line-height: 1.6; color: #d1c4e9;">
+                <strong>OutlaweEmpire</strong> (империя вне закона) разработана небольшой группой людей. Мы добиваемся не токсичного комьюнити и хорошего, приятного геймплея. Спасибо каждому за поддержку кто скачал или играет на нашем проекте. Благодарим всех!
+            </p>
+        </div>
+
+        <!-- Донат -->
+        <div class="tab-content" id="tab-donate">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2>Донат</h2>
+            <p style="color: #b19cd9; text-align: center; padding: 20px 0;">— Раздел в разработке —</p>
+        </div>
+
+        <!-- Тех. Поддержка -->
+        <div class="tab-content" id="tab-support">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2>Тех. Поддержка</h2>
+            <div class="info-row"><strong>Тг:</strong> @NeonXHelper</div>
+            <div class="info-row"><strong>Дс:</strong> @worldsviat</div>
+            <div class="info-row"><strong>Маил:</strong> outlawe_empire@proton.me</div>
+        </div>
+
+        <!-- Форма ВХОДА -->
+        <div class="tab-content" id="tab-login">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2>Авторизация</h2>
+            <div class="form-group">
+                <label>Игровой ник (Nick_Name):</label>
+                <input type="text" class="form-control" id="loginNick" placeholder="Name_Surname">
+            </div>
+            <div class="form-group">
+                <label>Пароль:</label>
+                <input type="password" class="form-control" id="loginPass" placeholder="Не менее 6 символов">
+            </div>
+
+            <div class="captcha-box">
+                <label id="captchaText" style="font-weight: bold; color: #d8bfd8; display: block; margin-bottom: 5px;"></label>
+                <input type="number" class="form-control" id="loginCaptchaInput" placeholder="Введите ответ">
+            </div>
+
+            <button class="btn-action" onclick="handleLogin()">Войти</button>
+            <div class="auth-switch">Нет аккаунта? <span onclick="openTab('register')">Зарегистрироваться</span></div>
+        </div>
+
+        <!-- Форма РЕГИСТРАЦИИ -->
+        <div class="tab-content" id="tab-register">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2>Регистрация аккаунта</h2>
+            <div class="form-group">
+                <label>Игровой ник (Формат Nick_Name):</label>
+                <input type="text" class="form-control" id="regNick" placeholder="Name_Surname">
+            </div>
+            <div class="form-group">
+                <label>Пароль (мин. 6 символов/букв):</label>
+                <input type="password" class="form-control" id="regPass1" placeholder="Введите пароль">
+            </div>
+            <div class="form-group">
+                <label>Повторите пароль:</label>
+                <input type="password" class="form-control" id="regPass2" placeholder="Повторите пароль">
+            </div>
+
+            <button class="btn-action" onclick="handleRegister()">Зарегистрироваться</button>
+            <div class="auth-switch">Уже есть аккаунт? <span onclick="openTab('login')">Войти</span></div>
+        </div>
+
+        <!-- Кабинет -->
+        <div class="tab-content" id="tab-cabinet">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2>Личный кабинет</h2>
+            <div class="info-row">Ник: <strong id="cabNick">Player_Name</strong></div>
+            <div class="info-row">Баланс: <strong id="cabMoney">0 $</strong></div>
+            <div class="info-row">Токены: <strong id="cabTokens">0 токенов</strong></div>
+            
+            <div class="form-group">
+                <label>Выбор сервера:</label>
+                <select class="form-control" id="serverSelect">
+                    <option value="Purple">Purple</option>
+                </select>
+            </div>
+
+            <button class="btn-action" onclick="logout()" style="background: #444;">Выйти из аккаунта</button>
+            
+            <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
+                Пополнить баланс: <a href="https://t.me/OE_StarsBot" target="_blank" style="color: #ba55d3; text-decoration: none;">@OE_StarsBot</a>
+            </div>
+        </div>
+
+        <!-- Админка -->
+        <div class="tab-content" id="tab-admin">
+            <button class="close-tab" onclick="closeTabs()">✕</button>
+            <h2 style="color: #ff6b6b;">Панель Администратора</h2>
+            <p style="font-size: 0.9rem; color: #b19cd9; margin-bottom: 15px;">Выдано от: World_Sviat</p>
+
+            <div class="form-group">
+                <label>Ник игрока:</label>
+                <input type="text" class="form-control" id="targetNick" placeholder="Name_Surname">
+            </div>
+
+            <div class="form-group">
+                <label>Сумма денег ($):</label>
+                <input type="number" class="form-control" id="addMoney" value="0">
+            </div>
+
+            <div class="form-group">
+                <label>Количество токенов:</label>
+                <input type="number" class="form-control" id="addTokens" value="0">
+            </div>
+
+            <button class="btn-action btn-admin" onclick="adminGiveCurrency()">Выдать игроку</button>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        &copy; 2026 OutlaweEmpire. All rights reserved.
+    </footer>
+
+    <!-- Скрипты -->
+    <script>
+        let currentCaptchaAnswer = 0;
+
+        window.onload = function() {
+            generateCaptcha();
+            checkSession();
+        };
+
+        function toggleMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('active');
+        }
+
+        function openTab(tabName) {
+            closeTabs();
+            document.getElementById('mainHero').style.display = 'none';
+            
+            if (tabName === 'cabinet') {
+                let loggedUser = localStorage.getItem('oe_logged_user');
+                if (!loggedUser) {
+                    document.getElementById('tab-login').classList.add('active');
+                    return;
+                } else {
+                    updateCabinetData(loggedUser);
+                }
+            }
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('dropdownMenu').classList.remove('active');
+        }
+
+        function closeTabs() {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById('mainHero').style.display = 'flex';
+            document.getElementById('dropdownMenu').classList.remove('active');
+        }
+
+        function generateCaptcha() {
+            let num1 = Math.floor(Math.random() * 10) + 1;
+            let num2 = Math.floor(Math.random() * 10) + 1;
+            currentCaptchaAnswer = num1 + num2;
+            document.getElementById('captchaText').innerText = `Решите пример: ${num1} + ${num2} = ?`;
+        }
+
+        function checkSession() {
+            let loggedUser = localStorage.getItem('oe_logged_user');
+            const adminBtn = document.getElementById('adminMenuBtn');
+            const cabTitle = document.getElementById('cabinetMenuTitle');
+
+            if (loggedUser) {
+                cabTitle.innerText = "Кабинет (" + loggedUser + ")";
+                if (loggedUser === 'World_Sviat') {
+                    adminBtn.style.display = 'block';
+                } else {
+                    adminBtn.style.display = 'none';
+                }
+            } else {
+                cabTitle.innerText = "Вход / Регистрация";
+                adminBtn.style.display = 'none';
+            }
+        }
+
+        function handleRegister() {
+            let nick = document.getElementById('regNick').value.trim();
+            let pass1 = document.getElementById('regPass1').value;
+            let pass2 = document.getElementById('regPass2').value;
+
+            if (!nick.includes('_') || nick.split('_').length !== 2) {
+                alert('Ошибка! Ник должен быть в формате Nick_Name');
+                return;
+            }
+
+            if (pass1.length < 6) {
+                alert('Ошибка! Пароль должен содержать не менее 6 символов.');
+                return;
+            }
+
+            if (pass1 !== pass2) {
+                alert('Ошибка! Пароли не совпадают.');
+                return;
+            }
+
+            if (localStorage.getItem('oe_user_' + nick)) {
+                alert('Аккаунт с таким ником уже зарегистрирован!');
+                return;
+            }
+
+            let userData = { pass: pass1, money: 0, tokens: 0 };
+            localStorage.setItem('oe_user_' + nick, JSON.stringify(userData));
+            
+            alert('Регистрация завершена! Войдите в аккаунт.');
+            openTab('login');
+        }
+
+        function handleLogin() {
+            let nick = document.getElementById('loginNick').value.trim();
+            let pass = document.getElementById('loginPass').value;
+            let captchaInput = parseInt(document.getElementById('loginCaptchaInput').value);
+
+            if (captchaInput !== currentCaptchaAnswer) {
+                alert('Ошибка! Неверная капча.');
+                generateCaptcha();
+                document.getElementById('loginCaptchaInput').value = '';
+                return;
+            }
+
+            let savedDataStr = localStorage.getItem('oe_user_' + nick);
+            if (!savedDataStr) {
+                alert('Аккаунт не найден!');
+                generateCaptcha();
+                return;
+            }
+
+            let userData = JSON.parse(savedDataStr);
+            if (userData.pass !== pass) {
+                alert('Неверный пароль!');
+                generateCaptcha();
+                return;
+            }
+
+            localStorage.setItem('oe_logged_user', nick);
+            checkSession();
+            alert('Успешный вход, ' + nick + '!');
+            openTab('cabinet');
+        }
+
+        function updateCabinetData(nick) {
+            let userStr = localStorage.getItem('oe_user_' + nick);
+            if (userStr) {
+                let data = JSON.parse(userStr);
+                document.getElementById('cabNick').innerText = nick;
+                document.getElementById('cabMoney').innerText = data.money + ' $';
+                document.getElementById('cabTokens').innerText = data.tokens + ' токенов';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('oe_logged_user');
+            checkSession();
+            alert('Вы вышли из аккаунта.');
+            closeTabs();
+        }
+
+        function adminGiveCurrency() {
+            let target = document.getElementById('targetNick').value.trim();
+            let moneyToAdd = parseInt(document.getElementById('addMoney').value) || 0;
+            let tokensToAdd = parseInt(document.getElementById('addTokens').value) || 0;
+
+            let targetStr = localStorage.getItem('oe_user_' + target);
+            if (!targetStr) {
+                alert('Игрок не найден!');
+                return;
+            }
+
+            let targetData = JSON.parse(targetStr);
+            targetData.money += moneyToAdd;
+            targetData.tokens += tokensToAdd;
+
+            localStorage.setItem('oe_user_' + target, JSON.stringify(targetData));
+            alert(`Успешно выдано игроку ${target}!\nДеньги: +${moneyToAdd}$\nТокены: +${tokensToAdd}`);
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    let openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('active')) {
+                        openDropdown.classList.remove('active');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
