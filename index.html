@@ -542,12 +542,23 @@
                 return;
             }
 
-            if (localStorage.getItem('oe_user_' + nick)) {
-                alert('Аккаунт с таким ником уже зарегистрирован!');
-                return;
+            // Аккаунт, созданный админом при выдаче награды, имеет pass === null:
+            // игрок может его "забрать", зарегистрировавшись, и сохранит выданный баланс
+            let existingStr = localStorage.getItem('oe_user_' + nick);
+            let pending = null;
+            if (existingStr) {
+                try { pending = JSON.parse(existingStr); } catch (e) { pending = null; }
+                if (!pending || pending.pass !== null) {
+                    alert('Аккаунт с таким ником уже зарегистрирован!');
+                    return;
+                }
             }
 
-            let userData = { pass: pass1, money: 0, tokens: 0 };
+            let userData = {
+                pass: pass1,
+                money: pending ? (pending.money || 0) : 0,
+                tokens: pending ? (pending.tokens || 0) : 0
+            };
             localStorage.setItem('oe_user_' + nick, JSON.stringify(userData));
             
             alert('Регистрация завершена! Войдите в аккаунт.');
@@ -608,18 +619,39 @@
             let moneyToAdd = parseInt(document.getElementById('addMoney').value) || 0;
             let tokensToAdd = parseInt(document.getElementById('addTokens').value) || 0;
 
-            let targetStr = localStorage.getItem('oe_user_' + target);
-            if (!targetStr) {
-                alert('Игрок не найден!');
+            if (!target) {
+                alert('Введите ник игрока!');
                 return;
             }
 
-            let targetData = JSON.parse(targetStr);
-            targetData.money += moneyToAdd;
-            targetData.tokens += tokensToAdd;
+            let key = 'oe_user_' + target;
+            let targetData = null;
+            let created = false;
 
-            localStorage.setItem('oe_user_' + target, JSON.stringify(targetData));
-            alert(`Успешно выдано игроку ${target}!\nДеньги: +${moneyToAdd}$\nТокены: +${tokensToAdd}`);
+            // 1. Пробуем найти существующий аккаунт
+            let targetStr = localStorage.getItem(key);
+            if (targetStr) {
+                try { targetData = JSON.parse(targetStr); } catch (e) { targetData = null; }
+            }
+
+            // 2. Если аккаунта нет (или запись повреждена) — создаём новый с нулевым балансом.
+            // pass: null — входить в него нельзя, пока игрок сам не зарегистрируется (см. handleRegister).
+            if (!targetData) {
+                if (!target.includes('_') || target.split('_').length !== 2) {
+                    alert('Ошибка! Ник должен быть в формате Nick_Name');
+                    return;
+                }
+                targetData = { pass: null, money: 0, tokens: 0 };
+                created = true;
+            }
+
+            // 3. Прибавляем к текущим значениям
+            targetData.money = (parseInt(targetData.money) || 0) + moneyToAdd;
+            targetData.tokens = (parseInt(targetData.tokens) || 0) + tokensToAdd;
+
+            localStorage.setItem(key, JSON.stringify(targetData));
+            alert(`Успешно выдано игроку ${target}!\nДеньги: +${moneyToAdd}$\nТокены: +${tokensToAdd}` +
+                (created ? '\n(Аккаунт создан автоматически)' : ''));
         }
 
         window.onclick = function(event) {
